@@ -1,0 +1,21 @@
+type Query {
+  getMessage: [Message]
+  message(id: ID!): Message
+}
+
+type Mutation {
+  createMessage(createChatInput: CreateChatInput): Message
+}
+
+type Subscription {
+  chatCreated: Message
+}
+
+type Message {
+  id: Int
+  text: String
+}
+
+input CreateChatInput {
+  text: String
+}
