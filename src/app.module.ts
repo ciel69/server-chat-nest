@@ -1,22 +1,24 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { join } from 'path';
 
 import { AppController } from './app/app.controller';
 import { AppService } from './app/app.service';
-import { ChatModule } from './chat/chat.module';
+
+import AppModules from 'modules';
+import { JoiModule} from 'providers';
 
 @Module({
   imports: [
-    ChatModule,
     GraphQLModule.forRoot({
       typePaths: ['./**/*.graphql'],
+      context: ({ req }) => ({ req }),
       installSubscriptionHandlers: true,
-      definitions: {
-        path: join(process.cwd(), 'src/graphql.schema.ts'),
-        outputAs: 'class',
-      },
     }),
+    JoiModule.register({
+      abortEarly: false,
+      allowUnknown: true,
+    }),
+    ...AppModules,
   ],
   controllers: [AppController],
   providers: [AppService],

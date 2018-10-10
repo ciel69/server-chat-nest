@@ -1,0 +1,7 @@
+type Query {
+  login(login: String!): JwtToken
+}
+
+type JwtToken {
+  token: String
+}

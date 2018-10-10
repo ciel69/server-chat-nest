@@ -4,7 +4,9 @@ type Query {
 }
 
 type Mutation {
-  createMessage(createChatInput: CreateChatInput): Message
+  createMessage(createChatInput: CreateChatInput): Message #Created new message
+  createMessageTest(createChatInput: CreateChatInput): Message
+  createMessageTest3(createChatInput: CreateChatInput): Message
 }
 
 type Subscription {

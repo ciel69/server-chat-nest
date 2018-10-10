@@ -2,7 +2,7 @@ import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 
-import { Message } from '../graphql.schema';
+import { Message } from './typedefs';
 import { ChatGuard } from './chat.guard';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
@@ -41,7 +41,6 @@ export class ChatResolvers {
 
   @Subscription('chatCreated')
   chatCreated() {
-    console.log('chatCreated');
     return {
       subscribe: () => pubSub.asyncIterator('chatCreated'),
     };

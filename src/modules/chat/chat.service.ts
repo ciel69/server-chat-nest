@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Message } from '../graphql.schema';
+
+import { Message } from './typedefs';
+
+import data from './data/test';
 
 @Injectable()
 export class ChatService {
-  private readonly message: Message[] = [{ id: 1, text: 'Test' }];
+  private readonly message: Message[] = data;
 
   async create(message: Message): Promise<Message> {
     this.message.push({ ...message, id: this.message.length + 1 });
