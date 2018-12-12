@@ -1,6 +1,7 @@
 type Query {
   allUsers: [User]
   user(id: ID!): User
+  currentUser: User
 }
 
 type Mutation {
@@ -15,6 +16,7 @@ type User {
   id: Int
   name: String
   login: String
+  token: String
 }
 
 input CreateUserInput {

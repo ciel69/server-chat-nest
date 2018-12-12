@@ -1,7 +1,9 @@
 import { ParseIntPipe, UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Subscription, Context, GqlExecutionContext } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 
+import { GqlAuthGuard } from 'modules/auth/guards/GqlAuthGuard';
+import { RequestContext } from 'modules/request-context';
 import { Message } from './typedefs';
 import { ChatGuard } from './chat.guard';
 import { ChatService } from './chat.service';
@@ -16,7 +18,11 @@ export class ChatResolvers {
 
   @Query()
   @UseGuards(ChatGuard)
-  async getMessage() {
+  async getMessage(@Context() context) {
+    const { session } = context.req;
+    console.log('getMessage', session);
+    // console.log('request', RequestContext.currentRequestContext().request);
+    // await CurrentUser();
     return await this.chatService.findAll();
   }
 
@@ -29,6 +35,7 @@ export class ChatResolvers {
   }
 
   @Mutation('createMessage')
+  @UseGuards(GqlAuthGuard)
   async create(@Args('createChatInput') args): Promise<Message> {
     if (args) {
       const createdMessage = await this.chatService.create(args);

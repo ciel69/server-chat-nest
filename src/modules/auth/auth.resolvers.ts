@@ -1,8 +1,10 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver, Context } from '@nestjs/graphql';
+import { Controller, Session, Req } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { JwtToken } from './interfaces/auth.interfaces';
 
+@Controller('Auth')
 @Resolver('Auth')
 export class AuthResolvers {
   constructor(
@@ -11,11 +13,17 @@ export class AuthResolvers {
   }
 
   @Query('login')
-  public async login(@Args('login') login: string, @Args('password') password: string): Promise<JwtToken> {
+  public async login( @Args('login') login: string, @Args('password') password: string, @Context() context): Promise<JwtToken> {
+    const { session } = context.req;
     const token = await this.authService.createToken({
       login,
     });
-    console.log('token', token);
+
+    session.user = {
+      login,
+      token,
+    };
+
     return token;
   }
 }

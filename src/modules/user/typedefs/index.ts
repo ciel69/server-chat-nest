@@ -16,6 +16,7 @@ export abstract class IQuery {
   abstract allUsers(): User[] | Promise<User[]>;
 
   abstract user(id: string): User | Promise<User>;
+  abstract currentUser(): User | Promise<User>;
 }
 
 export abstract class ISubscription {
@@ -25,4 +26,5 @@ export abstract class ISubscription {
 export interface UserPayload {
   login: string;
   password: string;
+  token: string;
 }

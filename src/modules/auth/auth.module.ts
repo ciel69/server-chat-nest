@@ -10,7 +10,10 @@ import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+      session: true,
+    }),
     JwtModule.register({
       secretOrPrivateKey: 'secretKey',
       signOptions: {

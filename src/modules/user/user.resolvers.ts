@@ -1,5 +1,5 @@
 import { ParseIntPipe, UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Subscription, Context } from '@nestjs/graphql';
 
 import { PubSub } from 'graphql-subscriptions';
 
@@ -27,6 +27,12 @@ export class UserResolvers {
       id: number,
   ): Promise<User> {
     return await this.userService.findOneById(id);
+  }
+
+  @Query('currentUser')
+  currentUser(@Context() context): Promise<User> {
+    const { session } = context.req;
+    return session.user;
   }
 
   @Mutation('createUser')

@@ -2,7 +2,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
 
 import * as Joi from 'joi';
-import { JoiService } from '../../providers';
+import { JoiService } from 'providers';
 
 import { JwtPayload, JwtToken } from './interfaces/auth.interfaces';
 
@@ -17,7 +17,6 @@ export class AuthService {
   ) {}
 
   public async createToken(args: JwtPayload): Promise<JwtToken> {
-    console.log('args', args);
     await this.joiService
       .validate(args, Joi.object({
         login: Joi.string().max(128).required(),
