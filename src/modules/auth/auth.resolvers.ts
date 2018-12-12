@@ -21,7 +21,7 @@ export class AuthResolvers {
 
     session.user = {
       login,
-      token,
+      ...token,
     };
 
     return token;

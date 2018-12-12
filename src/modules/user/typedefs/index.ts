@@ -6,6 +6,7 @@ export class User {
   id?: number;
   name?: string;
   login?: string;
+  token?: string;
 }
 
 export abstract class IMutation {
@@ -26,5 +27,4 @@ export abstract class ISubscription {
 export interface UserPayload {
   login: string;
   password: string;
-  token: string;
 }

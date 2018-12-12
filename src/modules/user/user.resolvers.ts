@@ -30,7 +30,7 @@ export class UserResolvers {
   }
 
   @Query('currentUser')
-  currentUser(@Context() context): Promise<User> {
+  currentUser(@Context() context) {
     const { session } = context.req;
     return session.user;
   }
