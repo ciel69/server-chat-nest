@@ -1,7 +1,9 @@
 type Query {
-  login(login: String!): JwtToken
+  login(login: String!, password: String!): JwtToken
 }
 
 type JwtToken {
   token: String
+  login: String
+  uid: ID!
 }

@@ -1,3 +1,5 @@
+import { User } from 'modules/user/typedefs/index';
+
 export class CreateChatInput {
   text?: string;
 }
@@ -5,7 +7,8 @@ export class CreateChatInput {
 export class Message {
   id?: number;
   text?: string;
-  test?: string;
+  uid?: number;
+  user?: User;
 }
 
 export abstract class IMutation {

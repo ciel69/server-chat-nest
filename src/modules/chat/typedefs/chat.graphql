@@ -5,8 +5,6 @@ type Query {
 
 type Mutation {
   createMessage(createChatInput: CreateChatInput): Message #Created new message
-  createMessageTest(createChatInput: CreateChatInput): Message
-  createMessageTest3(createChatInput: CreateChatInput): Message
 }
 
 type Subscription {
@@ -16,8 +14,12 @@ type Subscription {
 type Message {
   id: Int
   text: String
+  user: User
+  creationDate: String
 }
 
 input CreateChatInput {
   text: String
+  uid: ID
+  creationDate: String
 }

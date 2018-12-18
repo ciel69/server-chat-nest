@@ -10,7 +10,9 @@ const pubSub = new PubSub();
 
 @Resolver('Message')
 export class ChatResolvers {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+  ) {}
 
   @Query()
   @UseGuards(GqlAuthGuard)

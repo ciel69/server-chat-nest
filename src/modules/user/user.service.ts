@@ -28,9 +28,9 @@ export class UserService {
       }))
       .toPromise();
 
-    // @ts-ignore
-    const user: User = await this.users.filter(item => item.login === payload.login);
+    const user: User = await this.users.filter(item => item.login === payload.login).pop();
 
+    console.log('user', user);
     if (!user) {
       throw new BadRequestException();
     }
@@ -42,7 +42,7 @@ export class UserService {
     return this.users;
   }
 
-  findOneById(id: number): User {
-    return this.users.find(cat => cat.id === id);
+  findOneById(id: any): User {
+    return this.users.filter(cat => cat.id === parseInt(id, 10)).pop();
   }
 }
