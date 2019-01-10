@@ -15,6 +15,6 @@ async function bootstrap() {
     }));
   // app.useWebSocketAdapter(new RedisIoAdapter(app));
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen(3030);
+  await app.listen(process.env.PORT || 3030);
 }
 bootstrap();
