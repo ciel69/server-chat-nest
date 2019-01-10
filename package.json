@@ -5,11 +5,11 @@
   "author": "ciel",
   "license": "MIT",
   "engines": {
-    "node": "10.x"
+    "node": "9.x"
   },
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "node dist/main.js",
+    "start": "ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json --inspect",
     "prestart:prod": "rimraf dist && tsc",
