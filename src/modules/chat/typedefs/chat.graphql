@@ -1,5 +1,6 @@
 type Query {
   getMessage: [Message]
+  getChannel(id: ID!): Channel
   message(id: ID!): Message
 }
 
@@ -8,18 +9,26 @@ type Mutation {
 }
 
 type Subscription {
-  chatCreated: Message
+  messageAdded(channelId: ID!): Message
 }
 
 type Message {
   id: Int
+  channelId: Int
   text: String
   user: User
   creationDate: String
 }
 
+type Channel {
+  id: Int
+  messages: [Message]
+  name: String
+}
+
 input CreateChatInput {
   text: String
   uid: ID
+  channelId: ID
   creationDate: String
 }

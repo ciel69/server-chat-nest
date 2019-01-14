@@ -1,6 +1,6 @@
 import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription, Context } from '@nestjs/graphql';
-import { PubSub } from 'graphql-subscriptions';
+import { PubSub, withFilter } from 'graphql-subscriptions';
 
 import { GqlAuthGuard } from 'modules/auth/guards/GqlAuthGuard';
 import { Message } from './typedefs';
@@ -28,22 +28,37 @@ export class ChatResolvers {
     return await this.chatService.findOneById(id);
   }
 
+  @Query('getChannel')
+  async getChannel(
+    @Args('id', ParseIntPipe)
+      id: number,
+  ): Promise<Message> {
+    return await this.chatService.getChannel(id);
+  }
+
   @Mutation('createMessage')
-  @UseGuards(GqlAuthGuard)
+  // @UseGuards(GqlAuthGuard)
   async create(@Args('createChatInput') args): Promise<Message> {
     if (args) {
       const createdMessage = await this.chatService.create(args);
-      pubSub.publish('chatCreated', { chatCreated: createdMessage });
+      pubSub.publish('messageAdded', { messageAdded: createdMessage, channelId: args.channelId });
       return createdMessage;
     }
 
     return Promise.reject(new Error('Null arguments'));
   }
 
-  @Subscription('chatCreated')
-  chatCreated() {
+  @Subscription('messageAdded')
+  messageAdded() {
     return {
-      subscribe: () => pubSub.asyncIterator('chatCreated'),
+      subscribe: withFilter(
+        () => pubSub.asyncIterator('messageAdded'),
+        (payload, variables) => {
+          // The `messageAdded` channel includes events for all channels, so we filter to only
+          // pass through events for the channel specified in the query
+          return payload.channelId === variables.channelId;
+        },
+      ),
     };
   }
 }

@@ -39,7 +39,7 @@ export class UserResolvers {
   async create(@Args('createChatInput') args): Promise<User> {
     if (args) {
       const createdMessage = await this.userService.create(args);
-      pubSub.publish('userCreated', { chatCreated: createdMessage });
+      pubSub.publish('userCreated', { userCreated: createdMessage });
       return createdMessage;
     }
 
@@ -47,7 +47,7 @@ export class UserResolvers {
   }
 
   @Subscription('userCreated')
-  chatCreated() {
+  userCreated() {
     return {
       subscribe: () => pubSub.asyncIterator('userCreated'),
     };
