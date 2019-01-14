@@ -31,16 +31,18 @@ export class ChatService {
     const channel = this.channels.find(item => +item.id === +message.channelId);
     if (!channel) throw new Error('Channel does not exist');
 
-    let lastMessageId = channel.messages && channel.messages.length || 0;
+    const lastMessageId = (channel.messages && channel.messages.length || 0) + 1;
 
     const user = await this.userService.findOneById(message.uid);
+
+    if (!user) throw new Error('User does not exist');
+
     const newMessage = {
-      id: lastMessageId++,
+      id: lastMessageId,
       text: message.text,
       createdAt: +new Date(),
-      user,
+      uid: message.uid,
     };
-    this.message.push({ ...message, id: this.message.length + 1, user });
 
     channel.messages.push(newMessage);
     return newMessage;
@@ -53,8 +55,15 @@ export class ChatService {
     });
   }
 
-  getChannel(id: number): Message {
-    return this.channels.find(cat => +cat.id === +id);
+  getChannel(id: number): Channel {
+    const channel = this.channels.find(cat => +cat.id === +id);
+    if (!channel) throw new Error('Channel does not exist');
+    channel.messages = channel.messages.map((item: Message) => {
+      const user = this.userService.findOneById(item.uid);
+      return {...item, user};
+    });
+
+    return channel;
   }
 
   findOneById(id: number): Message {

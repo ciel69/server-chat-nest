@@ -43,6 +43,6 @@ export class UserService {
   }
 
   findOneById(id: any): User {
-    return this.users.filter(cat => cat.id === parseInt(id, 10)).pop();
+    return this.users.find(item => +item.id === +id);
   }
 }
