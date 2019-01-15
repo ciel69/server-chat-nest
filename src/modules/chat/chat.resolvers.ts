@@ -29,6 +29,7 @@ export class ChatResolvers {
   }
 
   @Query('getChannel')
+  @UseGuards(GqlAuthGuard)
   async getChannel(
     @Args('id', ParseIntPipe)
       id: number,
@@ -37,7 +38,7 @@ export class ChatResolvers {
   }
 
   @Mutation('createMessage')
-  // @UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard)
   async create(@Args('createChatInput') args): Promise<Message> {
     if (args) {
       const createdMessage = await this.chatService.create(args);

@@ -45,7 +45,7 @@ export class ChatService {
     };
 
     channel.messages.push(newMessage);
-    return newMessage;
+    return { ...newMessage, user };
   }
 
   findAll(): Message[] {

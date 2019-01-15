@@ -14,6 +14,7 @@ export class UserService {
     private readonly joiService: JoiService,
   ) {
   }
+
   private readonly users: User[] = data;
 
   async create(user: User): Promise<User> {
@@ -28,9 +29,8 @@ export class UserService {
       }))
       .toPromise();
 
-    const user: User = await this.users.filter(item => item.login === payload.login).pop();
+    const user: User = await this.users.find(item => item.login === payload.login);
 
-    console.log('user', user);
     if (!user) {
       throw new BadRequestException();
     }
