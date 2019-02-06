@@ -9,6 +9,7 @@ export class Message {
   text?: string;
   channelId?: number;
   uid?: number;
+  channel?: Channel;
   user?: User;
 }
 
