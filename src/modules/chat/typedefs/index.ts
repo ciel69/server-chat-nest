@@ -7,8 +7,16 @@ export class CreateChatInput {
 export class Message {
   id?: number;
   text?: string;
+  channelId?: number;
   uid?: number;
+  channel?: Channel;
   user?: User;
+}
+
+export class Channel {
+  id?: number;
+  name?: string;
+  messages?: Message[];
 }
 
 export abstract class IMutation {
@@ -22,5 +30,5 @@ export abstract class IQuery {
 }
 
 export abstract class ISubscription {
-  abstract chatCreated(): Message | Promise<Message>;
+  abstract messageAdded(): Message | Promise<Message>;
 }
