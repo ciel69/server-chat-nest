@@ -27,6 +27,7 @@ type Channel {
   id: Int
   messages: [Message]
   name: String
+  users: [User]
 }
 
 input CreateChatInput {

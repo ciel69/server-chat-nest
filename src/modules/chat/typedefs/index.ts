@@ -17,6 +17,7 @@ export class Channel {
   id?: number;
   name?: string;
   messages?: Message[];
+  users?: User[];
 }
 
 export abstract class IMutation {

@@ -1,17 +1,29 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { Channel, Message } from './typedefs';
 
+import { DialogEntity } from './entity/dialog.entity';
+
 import data from './data/test';
 import { UserService } from '../user/user.service';
+import { UserEntity } from '../user/entity/users.entity';
 
 @Injectable()
 export class ChatService {
   private readonly message: Message[] = [];
   private readonly channels: Channel[] = data;
+  private newDialog: DialogEntity;
+  private user: UserEntity;
 
   constructor(
     private readonly userService: UserService,
+
+    @InjectRepository(DialogEntity)
+    private readonly dialogRepository: Repository<DialogEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {
   }
 
@@ -48,8 +60,8 @@ export class ChatService {
     return { ...newMessage, user };
   }
 
-  findAll(): Channel[] {
-    return this.channels;
+  async findAll(): Promise<DialogEntity[]> {
+    return await this.dialogRepository.find({ relations: ['users'] });
   }
 
   getChannel(id: number): Channel {
@@ -63,18 +75,31 @@ export class ChatService {
     return channel;
   }
 
-  createChannel(uid: number): Channel {
-    const lastChannelId = this.channels.length;
+  async createChannel(uid: number): Promise<DialogEntity> {
+    // const lastChannelId = this.channels.length;
 
-    const newChannel = {
-      id: lastChannelId,
-      name: `channel ${uid}`,
-      messages: [],
-    };
+    const users = await this.userRepository.find({
+      where: [
+        { id: 1 },
+        { id: 2 },
+      ],
+    });
 
-    this.channels.push(newChannel);
+    const newDialog = new DialogEntity();
+    newDialog.name = 'fake dialog';
+    newDialog.users = [...users];
 
-    return newChannel;
+    return await this.dialogRepository.save(newDialog);
+
+    // const newChannel = {
+    //   id: lastChannelId,
+    //   name: `channel ${uid}`,
+    //   messages: [],
+    // };
+    //
+    // this.channels.push(newChannel);
+    //
+    // return newChannel;
   }
 
   findOneById(id: number): Message {

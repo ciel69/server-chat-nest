@@ -18,8 +18,9 @@ export class AuthResolvers {
     const { session } = context.req;
 
     try {
-      const user = await this.usersService.findOneByLogin({
+      const user = await this.usersService.findOneByLoginAndPassword({
         login,
+        password,
       });
 
       const token = await this.authService.createToken({
@@ -27,11 +28,11 @@ export class AuthResolvers {
       });
 
       session.user = {
-        login,
+        ...user,
         ...token,
       };
 
-      return { ...token, login, uid: user.id };
+      return { ...token, ...user, login, uid: user.id };
     } catch (e) {
       return e;
     }
