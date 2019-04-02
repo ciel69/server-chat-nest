@@ -1,5 +1,7 @@
 import { UserEntity as User } from 'modules/user/entity/users.entity';
-import { DialogEntity as Dialog } from 'modules/chat/entity/dialog.entity';
+
+import { DialogModel as Dialog, genListDialogs } from 'modules/chat/models/dialog.model';
+import { MessageModel as Message } from 'modules/chat/models/message.model';
 
 export class UserModel implements User {
   public id: number;
@@ -8,13 +10,17 @@ export class UserModel implements User {
   public salt: string;
   public password: string;
   public picture: string;
-  public dialogs: Dialog[];
+  public dialogs: Dialog[] | null;
+  public messages: Message[] | null;
 
   constructor(params: any) {
-    this.name = params.name;
-    this.salt = params.salt;
-    this.password = params.password;
-    this.picture = params.picture;
-    this.login = params.login;
+    this.id = params.users_id;
+    this.name = params.users_name;
+    this.salt = params.users_salt || '';
+    this.password = params.users_password || '';
+    // this.dialogs = genListDialogs(params);
+    this.dialogs = [];
+    this.picture = params.users_picture || '';
+    this.login = params.users_login || '';
   }
 }

@@ -5,6 +5,7 @@ import { PubSub, withFilter } from 'graphql-subscriptions';
 import { GqlAuthGuard } from 'modules/auth/guards/GqlAuthGuard';
 import { Message, Channel } from './typedefs';
 import { ChatService } from './chat.service';
+import { UserService } from 'modules/user/user.service';
 
 const pubSub = new PubSub();
 
@@ -12,6 +13,7 @@ const pubSub = new PubSub();
 export class ChatResolvers {
   constructor(
     private readonly chatService: ChatService,
+    private readonly userService: UserService,
   ) {
   }
 
@@ -33,6 +35,15 @@ export class ChatResolvers {
   // @UseGuards(GqlAuthGuard)
   async getChannels(): Promise<Channel[]> {
     return await this.chatService.findAll();
+  }
+
+  @Query('getCurrentUserChannels')
+  // @UseGuards(GqlAuthGuard)
+  async getCurrentUserChannels(
+    @Args('id', ParseIntPipe)
+      id: number,
+  ): Promise<any> {
+    return await this.userService.findOneById(id);
   }
 
   @Query('getChannel')
@@ -58,7 +69,7 @@ export class ChatResolvers {
   }
 
   @Mutation('createMessage')
-  @UseGuards(GqlAuthGuard)
+  // @UseGuards(GqlAuthGuard)
   async create(@Args('createChatInput') args): Promise<Message> {
     if (args) {
       const createdMessage = await this.chatService.create(args);

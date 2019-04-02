@@ -17,6 +17,7 @@ type User {
   name: String
   login: String
   token: String
+  dialogs: [Channel]
 }
 
 input CreateUserInput {

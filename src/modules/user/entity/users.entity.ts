@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, OneToMany } from 'typeorm';
 
 import { DialogEntity as Dialog } from 'modules/chat/entity/dialog.entity';
+import { MessageEntity as Message } from 'modules/chat/entity/message.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -26,6 +27,9 @@ export class UserEntity {
 
   @Column({ type: 'text', nullable: true })
   picture: string;
+
+  @OneToMany(type => Message, message => message.user)
+  messages: Message[];
 
   @ManyToMany(type => Dialog, dialog => dialog.users)
   dialogs: Dialog[];

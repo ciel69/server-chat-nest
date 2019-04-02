@@ -1,15 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne } from 'typeorm';
 
 import { UserEntity as User } from 'modules/user/entity/users.entity';
 import { DialogEntity as Dialog } from 'modules/chat/entity/dialog.entity';
 
 @Entity('messages')
-export class DialogEntity {
+export class MessageEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 255 })
-  name: string;
+  @Column({ type: 'text' })
+  text: string;
+
+  @Column({ type: 'integer' })
+  userId: string;
+
+  @Column({ type: 'integer' })
+  dialogId: string;
 
   @Column({ type: 'text', nullable: true })
   picture: string;
@@ -21,11 +27,11 @@ export class DialogEntity {
   })
   public createdAt: number | string;
 
-  @OneToOne(type => User)
+  @ManyToOne(type => User, user => user.messages)
   @JoinColumn()
   user: User;
 
-  @OneToOne(type => Dialog)
+  @ManyToOne(type => Dialog, dialog => dialog.messages)
   @JoinColumn()
   dialog: Dialog;
 }

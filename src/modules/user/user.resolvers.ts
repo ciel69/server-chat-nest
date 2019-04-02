@@ -26,7 +26,9 @@ export class UserResolvers {
     @Args('id', ParseIntPipe)
       id: number,
   ): Promise<User> {
-    return await this.userService.findOneById(id);
+    const user =  await this.userService.findOneById(id);
+
+    return user;
   }
 
   @Query('currentUser')

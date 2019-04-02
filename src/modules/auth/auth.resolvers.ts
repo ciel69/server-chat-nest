@@ -1,5 +1,4 @@
 import { Args, Query, Resolver, Context } from '@nestjs/graphql';
-import { Controller, Session, Req } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { UserService } from 'modules/user/user.service';
@@ -32,7 +31,7 @@ export class AuthResolvers {
         ...token,
       };
 
-      return { ...token, ...user, login, uid: user.id };
+      return { ...token, ...user, uid: user.id };
     } catch (e) {
       return e;
     }

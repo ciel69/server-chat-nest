@@ -1,6 +1,7 @@
 type Query {
   getMessage: [Message]
   getChannels: [Channel]
+  getCurrentUserChannels(id: ID!): [Channel]
   getChannel(id: ID!): Channel
   message(id: ID!): Message
 }
