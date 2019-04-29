@@ -92,26 +92,48 @@ export class UserService {
 
   async findOneById(id: any) {
     try {
-      const result: object[] = await this.userRepository.createQueryBuilder('users')
+      const result = await this.userRepository.createQueryBuilder('users')
       .addSelect('messages.id', 'messages_id')
       .addSelect('messages.text', 'messages_text')
       .addSelect('messages.picture', 'messages_picture')
       .addSelect('messages.created_at', 'messages_created_at')
       .addSelect('messages."userId"', 'messages_userId')
       .addSelect('messages."dialogId"', 'messages_dialogId')
-        .leftJoinAndSelect('users.dialogs', 'dialogs')
-        .leftJoinAndMapMany(
-          'messages',
-          query => query
+      .addSelect('messages_user."id"', 'messages_user_id')
+      .addSelect('messages_user."login"', 'messages_user_login')
+      .addSelect('messages_user."name"', 'messages_user_name')
+      .leftJoinAndSelect('users.dialogs', 'dialogs')
+      .leftJoinAndMapMany(
+        'messages',
+        query => {
+          return query
             .select('*')
             .from(MessageEntity, 'messages')
-            .orderBy('created_at', 'DESC')
-            .take(1),
-          'messages',
-          'dialogs.id = messages."dialogId"',
-        )
-        .where('users.id = :id', { id: +id })
-        .getRawMany();
+            .where(qb => {
+              const subQuery = qb.subQuery()
+                .select('max(id)', 'id')
+                .from(MessageEntity, 'mes')
+                .groupBy('"dialogId"')
+                .getQuery();
+              return 'messages.id IN ' + subQuery;
+            })
+            .orderBy('messages.created_at', 'DESC');
+        },
+        'messages',
+        'dialogs.id = messages."dialogId"',
+      )
+      .leftJoinAndMapMany(
+        'users',
+        query => query
+          .select('*')
+          .from(UserEntity, 'messages_user'),
+        'messages_user',
+        'messages."userId" = messages_user."id"',
+      )
+      .where('users.id = :id', { id: +id })
+      .andWhere('messages.text IS NOT NULL')
+      .getRawMany();
+
       const newResult = new UserModel(result[0]);
 
       result.forEach((item: any, index) => {

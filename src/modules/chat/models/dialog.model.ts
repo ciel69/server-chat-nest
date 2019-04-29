@@ -13,10 +13,10 @@ export class DialogModel implements Dialog {
 
   constructor(params: any) {
     this.id = params.dialogs_id;
-    this.name = params.dialogs_name;
-    this.picture = params.dialogs_picture;
+    this.name = params.dialogs_name || '';
+    this.picture = params.dialogs_picture || '';
     this.messages = params.messages_id ? genListMessage(params) : [];
-    this.createdAt = params.dialogs_created_at;
+    this.createdAt = params.dialogs_created_at || '';
   }
 }
 

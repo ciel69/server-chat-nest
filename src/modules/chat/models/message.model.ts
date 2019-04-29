@@ -12,7 +12,7 @@ export class MessageModel implements Message {
   public picture: string;
   public userId: string;
   public dialogId: string;
-  public user: User;
+  public user: User | null;
 
   constructor(params: any) {
     this.id = params.messages_id;
@@ -22,7 +22,11 @@ export class MessageModel implements Message {
     this.picture = params.messages_picture || '';
     this.text = params.messages_text;
     this.userId = params.messages_userId;
-    this.user = params.user || {};
+    this.user = params.messages_user_login ? new User({
+      users_id: params.messages_userId,
+      users_name: params.messages_user_name || '',
+      users_login: params.messages_user_login || '',
+    }) : null;
   }
 }
 

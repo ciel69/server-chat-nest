@@ -8,12 +8,19 @@ type Query {
 
 type Mutation {
   createMessage(createChatInput: CreateChatInput): Message #Created new message
-  createChannel(uid: ID!): Channel
+  createChannel(usersId: [Int]): Channel
 }
 
 type Subscription {
   messageAdded(channelId: ID!): Message
   subscribeChannel(uid: ID!): Channel
+  subscribeUser(uid: ID!): SubUser
+}
+
+type SubUser {
+  channel: Channel,
+  message: Message,
+  type: String
 }
 
 type Message {

@@ -8,6 +8,9 @@ import { DialogEntity } from './entity/dialog.entity';
 import { MessageEntity } from './entity/message.entity';
 import { UserEntity } from '../user/entity/users.entity';
 
+import { DialogModel } from 'modules/chat/models/dialog.model';
+import { UserModel } from 'modules/user/models/user.model';
+
 import { UserService } from '../user/user.service';
 
 @Injectable()
@@ -34,8 +37,10 @@ export class ChatService {
   async create(message: Message): Promise<MessageEntity> {
     const newMessage = new MessageEntity();
     newMessage.text = message.text;
-    newMessage.user = await this.userRepository.findOne(message.uid);
-    newMessage.dialog = await this.dialogRepository.findOne(message.channelId);
+    // newMessage.user = await this.userRepository.findOne(message.uid);
+    newMessage.user = new UserModel({users_id: message.uid});
+    // newMessage.dialog = await this.dialogRepository.findOne(message.channelId);
+    newMessage.dialog = new DialogModel({dialogs_id: message.channelId});
     return await this.messageRepository.save(newMessage);
   }
 
@@ -48,18 +53,21 @@ export class ChatService {
   }
 
   async getChannel(id): Promise<DialogEntity> {
-    return await this.dialogRepository.findOne({
-      where: [
-        { id: +id },
-      ],
-      relations: ['messages', 'messages.user', 'users'] });
+    return await this.dialogRepository.createQueryBuilder('dialogs')
+      .leftJoinAndSelect('dialogs.messages', 'messages')
+      .leftJoinAndSelect('messages.user', 'user')
+      .leftJoinAndSelect('dialogs.users', 'users')
+      .where('dialogs.id = :id', { id: +id })
+      .orderBy({
+        'messages.created_at': 'ASC',
+        'messages.id': 'ASC',
+      })
+      .getOne();
   }
 
-  async createChannel(uid: number): Promise<DialogEntity> {
+  async createChannel(usersId): Promise<DialogEntity> {
     const users = await this.userRepository.find({
-      where: [
-        { id: 4},
-      ],
+      where: usersId.map(item => ({id: item})),
     });
 
     const newDialog = new DialogEntity();
