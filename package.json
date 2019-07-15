@@ -1,8 +1,8 @@
 {
   "name": "chat-nest",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "description",
-  "author": "ciel",
+  "author": "ciel69",
   "license": "MIT",
   "engines": {
     "node": "9.x"
