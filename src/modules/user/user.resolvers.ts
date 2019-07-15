@@ -16,7 +16,7 @@ export class UserResolvers {
   }
 
   @Query()
-  @UseGuards(GqlAuthGuard)
+  // @UseGuards(GqlAuthGuard)
   async allUsers() {
     return await this.userService.findAll();
   }
@@ -26,7 +26,9 @@ export class UserResolvers {
     @Args('id', ParseIntPipe)
       id: number,
   ): Promise<User> {
-    return await this.userService.findOneById(id);
+    const user =  await this.userService.findOneById(id);
+
+    return user;
   }
 
   @Query('currentUser')
@@ -36,9 +38,9 @@ export class UserResolvers {
   }
 
   @Mutation('createUser')
-  async create(@Args('createChatInput') args): Promise<User> {
+  async create(@Args('createUserInput') args): Promise<User> {
     if (args) {
-      const createdMessage = await this.userService.create(args);
+      const createdMessage = await this.userService.createUser(args);
       pubSub.publish('userCreated', { userCreated: createdMessage });
       return createdMessage;
     }

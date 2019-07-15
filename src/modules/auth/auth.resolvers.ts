@@ -1,5 +1,4 @@
 import { Args, Query, Resolver, Context } from '@nestjs/graphql';
-import { Controller, Session, Req } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { UserService } from 'modules/user/user.service';
@@ -18,8 +17,9 @@ export class AuthResolvers {
     const { session } = context.req;
 
     try {
-      const user = await this.usersService.findOneByLogin({
+      const user = await this.usersService.findOneByLoginAndPassword({
         login,
+        password,
       });
 
       const token = await this.authService.createToken({
@@ -27,11 +27,11 @@ export class AuthResolvers {
       });
 
       session.user = {
-        login,
+        ...user,
         ...token,
       };
 
-      return { ...token, login, uid: user.id };
+      return { ...token, ...user, uid: user.id };
     } catch (e) {
       return e;
     }

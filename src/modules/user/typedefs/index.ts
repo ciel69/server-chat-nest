@@ -7,6 +7,12 @@ export class User {
   name?: string;
   login?: string;
   token?: string;
+  salt: string;
+}
+
+export interface UserPayload {
+  login: string;
+  password: string;
 }
 
 export abstract class IMutation {

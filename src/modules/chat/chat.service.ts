@@ -1,83 +1,83 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { Channel, Message } from './typedefs';
+import { Message } from './typedefs';
 
-import data from './data/test';
+import { DialogEntity } from './entity/dialog.entity';
+import { MessageEntity } from './entity/message.entity';
+import { UserEntity } from '../user/entity/users.entity';
+
+import { DialogModel } from 'modules/chat/models/dialog.model';
+import { UserModel } from 'modules/user/models/user.model';
+
 import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ChatService {
-  private readonly message: Message[] = [];
-  private readonly channels: Channel[] = data;
-
   constructor(
     private readonly userService: UserService,
+
+    @InjectRepository(DialogEntity)
+    private readonly dialogRepository: Repository<DialogEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(MessageEntity)
+    private readonly messageRepository: Repository<MessageEntity>,
   ) {
   }
 
-  addChannel(name = 'faker') {
-    let lastChannelId = this.channels.length || 0;
-    lastChannelId++;
-    const newChannel = {
-      id: lastChannelId,
-      name,
-      messages: [],
-    };
-    this.channels.push(newChannel);
-    return lastChannelId;
+  async addChannel(name = 'faker') {
+    const newDialog = new DialogEntity();
+    newDialog.name = name;
+
+    return await this.dialogRepository.save(newDialog);
   }
 
-  async create(message: Message): Promise<Message> {
-    const channel = this.channels.find(item => +item.id === +message.channelId);
-    if (!channel) throw new Error('Channel does not exist');
-
-    const lastMessageId = +`${message.channelId}${(channel.messages && channel.messages.length || 0) + 1}`;
-
-    const user = await this.userService.findOneById(message.uid);
-
-    if (!user) throw new Error('User does not exist');
-
-    const newMessage = {
-      id: lastMessageId,
-      text: message.text,
-      createdAt: +new Date(),
-      uid: message.uid,
-    };
-
-    channel.messages.push(newMessage);
-    return { ...newMessage, user };
+  async create(message: Message): Promise<MessageEntity> {
+    const newMessage = new MessageEntity();
+    newMessage.text = message.text;
+    // newMessage.user = await this.userRepository.findOne(message.uid);
+    newMessage.user = new UserModel({users_id: message.uid});
+    // newMessage.dialog = await this.dialogRepository.findOne(message.channelId);
+    newMessage.dialog = new DialogModel({dialogs_id: message.channelId});
+    return await this.messageRepository.save(newMessage);
   }
 
-  findAll(): Channel[] {
-    return this.channels;
+  async findAll(): Promise<DialogEntity[]> {
+    return await this.dialogRepository.find({
+      where: [
+        { 'users.id': 4 },
+      ],
+      relations: ['users', 'messages', 'messages.user'] });
   }
 
-  getChannel(id: number): Channel {
-    const channel = this.channels.find(cat => +cat.id === +id);
-    if (!channel) throw new Error('Channel does not exist');
-    channel.messages = channel.messages.map((item: Message) => {
-      const user = this.userService.findOneById(item.uid);
-      return { ...item, user };
+  async getChannel(id): Promise<DialogEntity> {
+    return await this.dialogRepository.createQueryBuilder('dialogs')
+      .leftJoinAndSelect('dialogs.messages', 'messages')
+      .leftJoinAndSelect('messages.user', 'user')
+      .leftJoinAndSelect('dialogs.users', 'users')
+      .where('dialogs.id = :id', { id: +id })
+      .orderBy({
+        'messages.created_at': 'ASC',
+        'messages.id': 'ASC',
+      })
+      .getOne();
+  }
+
+  async createChannel(usersId): Promise<DialogEntity> {
+    const users = await this.userRepository.find({
+      where: usersId.map(item => ({id: item})),
     });
 
-    return channel;
+    const newDialog = new DialogEntity();
+    newDialog.name = 'fake dialog';
+    newDialog.users = [...users];
+
+    return await this.dialogRepository.save(newDialog);
   }
 
-  createChannel(uid: number): Channel {
-    const lastChannelId = this.channels.length;
-
-    const newChannel = {
-      id: lastChannelId,
-      name: `channel ${uid}`,
-      messages: [],
-    };
-
-    this.channels.push(newChannel);
-
-    return newChannel;
-  }
-
-  findOneById(id: number): Message {
-    return this.message.find(cat => cat.id === id);
+  async findOneById(id: number): Promise<MessageEntity> {
+    return await this.messageRepository.findOne(id);
   }
 }
