@@ -5,8 +5,10 @@ import { MessageModel as Message } from 'modules/chat/models/message.model';
 
 export class UserModel implements User {
   public id: number;
-  public name: string;
+  public firstName: string;
+  public lastName: string;
   public login: string;
+  public email: string;
   public salt: string;
   public password: string;
   public picture: string;
@@ -15,12 +17,14 @@ export class UserModel implements User {
 
   constructor(params: any) {
     this.id = params.users_id;
-    this.name = params.users_name;
+    this.firstName = params.users_firstName;
+    this.lastName = params.users_lastName;
     this.salt = params.users_salt || '';
     this.password = params.users_password || '';
     // this.dialogs = genListDialogs(params);
     this.dialogs = [];
     this.picture = params.users_picture || '';
     this.login = params.users_login || '';
+    this.email = params.users_email || '';
   }
 }

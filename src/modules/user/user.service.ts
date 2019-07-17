@@ -31,7 +31,10 @@ export class UserService {
   public async createUser(args: UserPayload): Promise<UserEntity> {
     await this.joiService
       .validate(args, Joi.object({
-        login: Joi.string().max(128).required(),
+        login: Joi.string().max(128),
+        firstName: Joi.string().max(128).required(),
+        lastName: Joi.string().max(128),
+        email: Joi.string().email({ minDomainSegments: 2 }),
         password: Joi.string().max(128).required(),
       }))
       .toPromise();
@@ -39,8 +42,9 @@ export class UserService {
     const user = new UserEntity();
     const salt = createSalt();
 
-    user.login = args.login;
-    user.name = args.login;
+    user.login = args.email;
+    user.email = args.email;
+    user.firstName = args.firstName;
     user.password = createHash(args.password, salt);
     user.salt = salt;
 
@@ -101,6 +105,7 @@ export class UserService {
       .addSelect('messages."dialogId"', 'messages_dialogId')
       .addSelect('messages_user."id"', 'messages_user_id')
       .addSelect('messages_user."login"', 'messages_user_login')
+      .addSelect('messages_user."email"', 'messages_user_email')
       .addSelect('messages_user."name"', 'messages_user_name')
       .leftJoinAndSelect('users.dialogs', 'dialogs')
       .leftJoinAndMapMany(

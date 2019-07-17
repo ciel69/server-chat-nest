@@ -8,8 +8,11 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 255 })
+  @Column({ length: 255, unique: true })
   login: string;
+
+  @Column({ length: 255, unique: true })
+  email: string;
 
   @Column({
     type: 'bytea',
@@ -23,7 +26,10 @@ export class UserEntity {
   public password: string;
 
   @Column({ length: 255 })
-  name: string;
+  firstName: string;
+
+  @Column({ length: 255, nullable: true  })
+  lastName: string;
 
   @Column({ type: 'text', nullable: true })
   picture: string;
