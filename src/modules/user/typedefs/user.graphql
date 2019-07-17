@@ -14,13 +14,17 @@ type Subscription {
 
 type User {
   id: Int
-  name: String
+  firstName: String
+  lastName: String
   login: String
+  email: String
   token: String
   dialogs: [Channel]
 }
 
 input CreateUserInput {
   login: String
+  firstName: String
+  email: String
   password: String
 }

@@ -13,12 +13,18 @@ export class AuthResolvers {
   }
 
   @Query('login')
-  public async login(@Args('login') login: string, @Args('password') password: string, @Context() context): Promise<JwtToken> {
+  public async login(
+    @Args('login') login: string,
+    @Args('password') password: string,
+    @Args('firstName') firstName: string,
+    @Context() context,
+  ): Promise<JwtToken> {
     const { session } = context.req;
 
     try {
       const user = await this.usersService.findOneByLoginAndPassword({
         login,
+        firstName,
         password,
       });
 

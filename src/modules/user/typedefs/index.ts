@@ -12,6 +12,9 @@ export class User {
 
 export interface UserPayload {
   login: string;
+  firstName: string;
+  lastName?: string;
+  email?: string;
   password: string;
 }
 
