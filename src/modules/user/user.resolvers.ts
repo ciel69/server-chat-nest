@@ -1,10 +1,12 @@
-import { ParseIntPipe, UseGuards } from '@nestjs/common';
+import { ParseIntPipe, UseGuards, Inject, forwardRef } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription, Context } from '@nestjs/graphql';
 
 import { PubSub } from 'graphql-subscriptions';
 
 import { User } from './typedefs';
-import { UserService } from './user.service';
+import { UserService } from 'modules/user/user.service';
+import { AuthService } from 'modules/auth/auth.service';
+import { JwtToken } from 'modules/auth/interfaces/auth.interfaces';
 
 import { GqlAuthGuard } from 'modules/auth/guards/GqlAuthGuard';
 
@@ -12,7 +14,11 @@ const pubSub = new PubSub();
 
 @Resolver('User')
 export class UserResolvers {
-  constructor(private readonly userService: UserService) {
+  constructor(
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {
   }
 
   @Query()
@@ -26,7 +32,7 @@ export class UserResolvers {
     @Args('id', ParseIntPipe)
       id: number,
   ): Promise<User> {
-    const user =  await this.userService.findOneById(id);
+    const user = await this.userService.findOneById(id);
 
     return user;
   }
@@ -38,11 +44,14 @@ export class UserResolvers {
   }
 
   @Mutation('createUser')
-  async create(@Args('createUserInput') args): Promise<User> {
+  async create(@Args('createUserInput') args): Promise<JwtToken> {
     if (args) {
-      const createdMessage = await this.userService.createUser(args);
-      pubSub.publish('userCreated', { userCreated: createdMessage });
-      return createdMessage;
+      const createdUser = this.userService.createUser(args);
+      const token = this.authService.createToken({
+        login: args.login || args.email,
+      });
+      const promise = await Promise.all([createdUser, token]);
+      return { ...promise[0], ...promise[1] };
     }
 
     return Promise.reject(new Error('Null arguments'));

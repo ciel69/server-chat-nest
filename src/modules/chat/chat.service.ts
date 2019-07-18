@@ -38,7 +38,7 @@ export class ChatService {
     const newMessage = new MessageEntity();
     newMessage.text = message.text;
     // newMessage.user = await this.userRepository.findOne(message.uid);
-    newMessage.user = new UserModel({users_id: message.uid});
+    newMessage.user = new UserModel({users_id: message.id});
     // newMessage.dialog = await this.dialogRepository.findOne(message.channelId);
     newMessage.dialog = new DialogModel({dialogs_id: message.channelId});
     return await this.messageRepository.save(newMessage);

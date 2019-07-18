@@ -17,9 +17,7 @@ export class AuthResolvers {
     @Args('login') login: string,
     @Args('password') password: string,
     @Args('firstName') firstName: string,
-    @Context() context,
   ): Promise<JwtToken> {
-    const { session } = context.req;
 
     try {
       const user = await this.usersService.findOneByLoginAndPassword({
@@ -32,12 +30,7 @@ export class AuthResolvers {
         login,
       });
 
-      session.user = {
-        ...user,
-        ...token,
-      };
-
-      return { ...token, ...user, uid: user.id };
+      return { ...token, ...user };
     } catch (e) {
       return e;
     }

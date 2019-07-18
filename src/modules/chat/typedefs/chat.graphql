@@ -13,8 +13,8 @@ type Mutation {
 
 type Subscription {
   messageAdded(channelId: ID!): Message
-  subscribeChannel(uid: ID!): Channel
-  subscribeUser(uid: ID!): SubUser
+  subscribeChannel(id: ID!): Channel
+  subscribeUser(id: ID!): SubUser
 }
 
 type SubUser {
@@ -40,7 +40,7 @@ type Channel {
 
 input CreateChatInput {
   text: String
-  uid: ID
+  id: ID
   channelId: ID
   creationDate: String
 }

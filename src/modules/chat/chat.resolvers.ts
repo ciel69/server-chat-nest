@@ -103,8 +103,8 @@ export class ChatResolvers {
     filter: (payload: any, variables: any) => {
       if (payload.type === 'channel') {
         return payload.usersId && Array.isArray(payload.usersId)
-          ? payload.usersId.includes(+variables.uid)
-          : (+variables.uid === +payload.usersId);
+          ? payload.usersId.includes(+variables.id)
+          : (+variables.id === +payload.usersId);
       }
       return payload.channelId === variables.channelId;
     },

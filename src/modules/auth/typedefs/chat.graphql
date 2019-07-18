@@ -3,7 +3,10 @@ type Query {
 }
 
 type JwtToken {
+  firstName: String
+  lastName: String
+  email: String
   token: String
   login: String
-  uid: ID!
+  id: ID!
 }

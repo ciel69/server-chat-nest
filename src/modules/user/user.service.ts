@@ -31,9 +31,9 @@ export class UserService {
   public async createUser(args: UserPayload): Promise<UserEntity> {
     await this.joiService
       .validate(args, Joi.object({
-        login: Joi.string().max(128),
+        login: [Joi.string().max(128), Joi.empty()],
         firstName: Joi.string().max(128).required(),
-        lastName: Joi.string().max(128),
+        lastName: [Joi.string().max(128), Joi.empty()],
         email: Joi.string().email({ minDomainSegments: 2 }),
         password: Joi.string().max(128).required(),
       }))
@@ -42,9 +42,10 @@ export class UserService {
     const user = new UserEntity();
     const salt = createSalt();
 
-    user.login = args.email;
+    user.login = args.login || args.email;
     user.email = args.email;
     user.firstName = args.firstName;
+    user.lastName = args.lastName || '';
     user.password = createHash(args.password, salt);
     user.salt = salt;
 
@@ -105,8 +106,9 @@ export class UserService {
       .addSelect('messages."dialogId"', 'messages_dialogId')
       .addSelect('messages_user."id"', 'messages_user_id')
       .addSelect('messages_user."login"', 'messages_user_login')
+      .addSelect('messages_user."firstName"', 'messages_user_firstName')
       .addSelect('messages_user."email"', 'messages_user_email')
-      .addSelect('messages_user."name"', 'messages_user_name')
+      .addSelect('messages_user."lastName"', 'messages_user_lastName')
       .leftJoinAndSelect('users.dialogs', 'dialogs')
       .leftJoinAndMapMany(
         'messages',
