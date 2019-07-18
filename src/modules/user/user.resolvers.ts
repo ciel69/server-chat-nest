@@ -3,11 +3,11 @@ import { Args, Mutation, Query, Resolver, Subscription, Context } from '@nestjs/
 
 import { PubSub } from 'graphql-subscriptions';
 
-import { User } from './typedefs';
+import { User } from 'modules/user/typedefs';
 import { UserService } from 'modules/user/user.service';
+
 import { AuthService } from 'modules/auth/auth.service';
 import { JwtToken } from 'modules/auth/interfaces/auth.interfaces';
-
 import { GqlAuthGuard } from 'modules/auth/guards/GqlAuthGuard';
 
 const pubSub = new PubSub();

@@ -2,11 +2,11 @@ import { Module, forwardRef } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
-import { AuthService } from './auth.service';
-import { AuthResolvers } from './auth.resolvers';
+import { AuthService } from 'modules/auth/auth.service';
+import { AuthResolvers } from 'modules/auth/auth.resolvers';
+import { JwtStrategy } from 'modules/auth/jwt.strategy';
 
-import { JwtStrategy } from './jwt.strategy';
-import { UserModule } from '../user/user.module';
+import { UserModule } from 'modules/user/user.module';
 
 @Module({
   imports: [

@@ -1,21 +1,19 @@
-import { Injectable, BadRequestException, Inject } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as Joi from 'joi';
+import { JoiService } from 'providers';
 import { createSalt, createHash } from 'utils';
 
-import { UserPayload } from './typedefs';
-import { UserEntity } from './entity/users.entity';
+import { UserPayload } from 'modules/user/typedefs';
+import { UserEntity } from 'modules/user/entity/users.entity';
+import { DialogModel } from 'modules/chat/models/dialog.model';
+import { UserModel } from 'modules/user/models/user.model';
+
 import { DialogEntity } from 'modules/chat/entity/dialog.entity';
 import { MessageEntity } from 'modules/chat/entity/message.entity';
 
-import { DialogModel } from 'modules/chat/models/dialog.model';
-import { UserModel } from './models/user.model';
-
-import * as Joi from 'joi';
-import { JoiService } from 'providers';
-
-import { JwtPayload } from '../auth/interfaces/auth.interfaces';
-import { select } from 'async';
+import { JwtPayload } from 'modules/auth/interfaces/auth.interfaces';
 
 @Injectable()
 export class UserService {

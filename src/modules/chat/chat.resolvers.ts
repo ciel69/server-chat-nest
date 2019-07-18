@@ -1,10 +1,12 @@
 import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription, Context } from '@nestjs/graphql';
-import { PubSub, withFilter } from 'graphql-subscriptions';
+import { PubSub } from 'graphql-subscriptions';
 
 import { GqlAuthGuard } from 'modules/auth/guards/GqlAuthGuard';
-import { Message, Channel } from './typedefs';
-import { ChatService } from './chat.service';
+
+import { Message, Channel } from 'modules/chat/typedefs';
+import { ChatService } from 'modules/chat/chat.service';
+
 import { UserService } from 'modules/user/user.service';
 
 const pubSub = new PubSub();

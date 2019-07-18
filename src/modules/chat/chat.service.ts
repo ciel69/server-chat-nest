@@ -2,16 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Message } from './typedefs';
-
-import { DialogEntity } from './entity/dialog.entity';
-import { MessageEntity } from './entity/message.entity';
-import { UserEntity } from '../user/entity/users.entity';
-
+import { DialogEntity } from 'modules/chat/entity/dialog.entity';
 import { DialogModel } from 'modules/chat/models/dialog.model';
-import { UserModel } from 'modules/user/models/user.model';
+import { Message } from 'modules/chat/typedefs';
+import { MessageEntity } from 'modules/chat/entity/message.entity';
 
-import { UserService } from '../user/user.service';
+import { UserEntity } from 'modules/user/entity/users.entity';
+import { UserService } from 'modules/user/user.service';
+import { UserModel } from 'modules/user/models/user.model';
 
 @Injectable()
 export class ChatService {

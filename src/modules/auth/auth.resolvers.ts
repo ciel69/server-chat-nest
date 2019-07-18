@@ -1,8 +1,9 @@
-import { Args, Query, Resolver, Context } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 
-import { AuthService } from './auth.service';
+import { AuthService } from 'modules/auth/auth.service';
+import { JwtToken } from 'modules/auth/interfaces/auth.interfaces';
+
 import { UserService } from 'modules/user/user.service';
-import { JwtToken } from './interfaces/auth.interfaces';
 
 @Resolver('Auth')
 export class AuthResolvers {

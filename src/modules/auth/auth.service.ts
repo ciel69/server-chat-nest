@@ -4,9 +4,9 @@ import { Injectable } from '@nestjs/common';
 import * as Joi from 'joi';
 import { JoiService } from 'providers';
 
-import { JwtPayload, JwtToken } from './interfaces/auth.interfaces';
+import { JwtPayload, JwtToken } from 'modules/auth/interfaces/auth.interfaces';
 
-import { UserService } from '../user/user.service';
+import { UserService } from 'modules/user/user.service';
 
 @Injectable()
 export class AuthService {
