@@ -65,7 +65,7 @@ export class ChatResolvers {
   ): Promise<Channel> {
     const newChannel = await this.chatService.createChannel(usersId);
 
-    pubSub.publish('subscribeUser', { subscribeUser: newChannel, usersId, type: 'channel' });
+    pubSub.publish('subscribeUser', { subscribeUser: { channel: newChannel, message: [] }, usersId, type: 'channel' });
 
     return newChannel;
   }
@@ -78,9 +78,12 @@ export class ChatResolvers {
       pubSub.publish('subscribeUser',
         {
           subscribeUser: {
+            channel: {
+              id: args.channelId,
+            },
             message: {
               ...createdMessage,
-              channel: {id: args.channelId},
+              channel: { id: args.channelId },
             },
             type: 'message',
           },

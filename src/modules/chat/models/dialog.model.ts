@@ -1,7 +1,7 @@
 import { DialogEntity as Dialog } from 'modules/chat/entity/dialog.entity';
 
 import { MessageModel as Message, genListMessage } from 'modules/chat/models/message.model';
-import { UserModel as User } from 'modules/user/models/user.model';
+import { UserModel as User, genListUser } from 'modules/user/models/user.model';
 
 export class DialogModel implements Dialog {
   public id: number;
@@ -16,6 +16,7 @@ export class DialogModel implements Dialog {
     this.name = params.dialogs_name || '';
     this.picture = params.dialogs_picture || '';
     this.messages = params.messages_id ? genListMessage(params) : [];
+    this.users = params.users_id ? genListUser(params) : [];
     this.createdAt = params.dialogs_created_at || '';
   }
 }

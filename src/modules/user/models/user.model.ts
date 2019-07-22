@@ -28,3 +28,12 @@ export class UserModel implements User {
     this.email = params.users_email || '';
   }
 }
+
+
+export const genListUser = (params): UserModel[] => {
+  if (Array.isArray(params)) {
+    return params.map(item => new UserModel(item));
+  } else {
+    return [new UserModel(params)];
+  }
+}

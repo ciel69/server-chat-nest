@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, getConnection } from 'typeorm';
 
 import { DialogEntity } from 'modules/chat/entity/dialog.entity';
 import { DialogModel } from 'modules/chat/models/dialog.model';
@@ -15,7 +15,6 @@ import { UserModel } from 'modules/user/models/user.model';
 export class ChatService {
   constructor(
     private readonly userService: UserService,
-
     @InjectRepository(DialogEntity)
     private readonly dialogRepository: Repository<DialogEntity>,
     @InjectRepository(UserEntity)
@@ -36,9 +35,9 @@ export class ChatService {
     const newMessage = new MessageEntity();
     newMessage.text = message.text;
     // newMessage.user = await this.userRepository.findOne(message.uid);
-    newMessage.user = new UserModel({users_id: message.id});
+    newMessage.user = new UserModel({ users_id: message.id });
     // newMessage.dialog = await this.dialogRepository.findOne(message.channelId);
-    newMessage.dialog = new DialogModel({dialogs_id: message.channelId});
+    newMessage.dialog = new DialogModel({ dialogs_id: message.channelId });
     return await this.messageRepository.save(newMessage);
   }
 
@@ -47,7 +46,8 @@ export class ChatService {
       where: [
         { 'users.id': 4 },
       ],
-      relations: ['users', 'messages', 'messages.user'] });
+      relations: ['users', 'messages', 'messages.user'],
+    });
   }
 
   async getChannel(id): Promise<DialogEntity> {
@@ -63,15 +63,24 @@ export class ChatService {
       .getOne();
   }
 
-  async createChannel(usersId): Promise<DialogEntity> {
+  async createChannel(usersId): Promise<DialogEntity | any> {
+    const dialogId: any = await getConnection().query(`SELECT "dialogsId", COUNT(*)
+          FROM "dialogs_users_users"
+          WHERE "dialogs_users_users"."usersId" IN (${usersId.join(',')})
+          GROUP BY "dialogsId"
+          HAVING COUNT(*) > 1
+          LIMIT 1`);
+    if (dialogId && dialogId.length > 0) {
+      return {id: dialogId[0]['dialogsId'], name: '', users: [], messages: []};
+    }
+
     const users = await this.userRepository.find({
-      where: usersId.map(item => ({id: item})),
+      where: usersId.map(item => ({ id: item })),
     });
 
     const newDialog = new DialogEntity();
-    newDialog.name = 'fake dialog';
+    newDialog.name = users.map((item => item.firstName)).join('‡');
     newDialog.users = [...users];
-
     return await this.dialogRepository.save(newDialog);
   }
 
