@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getConnection } from 'typeorm';
+import { plainToClass } from 'class-transformer';
 
 import { DialogEntity } from 'modules/chat/entity/dialog.entity';
-import { DialogModel } from 'modules/chat/models/dialog.model';
 import { Message } from 'modules/chat/typedefs';
 import { MessageEntity } from 'modules/chat/entity/message.entity';
 
 import { UserEntity } from 'modules/user/entity/users.entity';
 import { UserService } from 'modules/user/user.service';
-import { UserModel } from 'modules/user/models/user.model';
 
 @Injectable()
 export class ChatService {
@@ -32,13 +31,12 @@ export class ChatService {
   }
 
   async create(message: Message): Promise<MessageEntity> {
-    const newMessage = new MessageEntity();
+    const newMessage = {} as MessageEntity;
     newMessage.text = message.text;
-    // newMessage.user = await this.userRepository.findOne(message.uid);
-    newMessage.user = new UserModel({ users_id: message.id });
-    // newMessage.dialog = await this.dialogRepository.findOne(message.channelId);
-    newMessage.dialog = new DialogModel({ dialogs_id: message.channelId });
-    return await this.messageRepository.save(newMessage);
+    newMessage.user = { id: message.id } as UserEntity;
+    newMessage.user = plainToClass(UserEntity, { id: message.id });
+    newMessage.dialog = { id: message.channelId } as DialogEntity;
+    return await this.messageRepository.save(plainToClass(MessageEntity, newMessage));
   }
 
   async findAll(): Promise<DialogEntity[]> {
@@ -71,7 +69,7 @@ export class ChatService {
           HAVING COUNT(*) > 1
           LIMIT 1`);
     if (dialogId && dialogId.length > 0) {
-      return {id: dialogId[0]['dialogsId'], name: '', users: [], messages: []};
+      return {id: dialogId[0].dialogsId, name: '', users: [], messages: []};
     }
 
     const users = await this.userRepository.find({

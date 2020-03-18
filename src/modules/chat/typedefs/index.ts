@@ -1,4 +1,4 @@
-import { User } from 'modules/user/typedefs/index';
+import { User } from 'modules/user/typedefs';
 
 export class CreateChatInput {
   text?: string;

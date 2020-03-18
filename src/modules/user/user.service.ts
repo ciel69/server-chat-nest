@@ -6,27 +6,29 @@ import { JoiService } from 'providers';
 import { createSalt, createHash } from 'utils';
 
 import { UserPayload } from 'modules/user/typedefs';
-import { UserEntity } from 'modules/user/entity/users.entity';
+import { UserEntity as User } from 'modules/user/entity/users.entity';
+
+import { DialogEntity as Dialog } from 'modules/chat/entity/dialog.entity';
+import { MessageEntity as Message} from 'modules/chat/entity/message.entity';
+
 import { DialogModel } from 'modules/chat/models/dialog.model';
 import { UserModel } from 'modules/user/models/user.model';
 
-import { DialogEntity } from 'modules/chat/entity/dialog.entity';
-import { MessageEntity } from 'modules/chat/entity/message.entity';
-
 import { JwtPayload } from 'modules/auth/interfaces/auth.interfaces';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly joiService: JoiService,
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(DialogEntity)
-    private readonly dialogsRepository: Repository<DialogEntity>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Dialog)
+    private readonly dialogsRepository: Repository<Dialog>,
   ) {
   }
 
-  public async createUser(args: UserPayload): Promise<UserEntity> {
+  public async createUser(args: UserPayload): Promise<User> {
     await this.joiService
       .validate(args, Joi.object({
         login: [Joi.string().max(128), Joi.empty()],
@@ -37,7 +39,7 @@ export class UserService {
       }))
       .toPromise();
 
-    const user = new UserEntity();
+    const user = new User();
     const salt = createSalt();
 
     user.login = args.login || args.email;
@@ -50,7 +52,7 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  public async findOneByLogin(payload: JwtPayload): Promise<UserEntity> {
+  public async findOneByLogin(payload: JwtPayload): Promise<User> {
     await this.joiService
       .validate(payload, Joi.object({
         login: Joi.string().max(128).required(),
@@ -68,7 +70,7 @@ export class UserService {
     return user;
   }
 
-  public async findOneByLoginAndPassword(args: UserPayload): Promise<UserEntity> {
+  public async findOneByLoginAndPassword(args: UserPayload): Promise<User> {
     await this.joiService
       .validate(args, Joi.object({
         login: Joi.string().max(128).required(),
@@ -89,13 +91,13 @@ export class UserService {
     return user;
   }
 
-  async findAll(): Promise<UserEntity[]> {
+  async findAll(): Promise<User[]> {
     return await this.userRepository.find();
   }
 
   async findOneById(id: any) {
     try {
-      const result = await this.userRepository.createQueryBuilder('users')
+      const result: User[] = await this.userRepository.createQueryBuilder('users')
       .addSelect('messages.id', 'messages_id')
       .addSelect('messages.text', 'messages_text')
       .addSelect('messages.picture', 'messages_picture')
@@ -113,11 +115,11 @@ export class UserService {
         query => {
           return query
             .select('*')
-            .from(MessageEntity, 'messages')
+            .from(Message, 'messages')
             .where(qb => {
               const subQuery = qb.subQuery()
                 .select('max(id)', 'id')
-                .from(MessageEntity, 'mes')
+                .from(Message, 'mes')
                 .groupBy('"dialogId"')
                 .getQuery();
               return 'messages.id IN ' + subQuery;
@@ -131,7 +133,7 @@ export class UserService {
         'users',
         query => query
           .select('*')
-          .from(UserEntity, 'messages_user'),
+          .from(User, 'messages_user'),
         'messages_user',
         'messages."userId" = messages_user."id"',
       )
